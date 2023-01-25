@@ -96,6 +96,8 @@ class FrogControl(ManualControl):
             s = {7: '🪰', 1: '⬛', 2: '🧱', 8: '🐸'} if self.emojis else {7: '°', 1: ' ', 2: '#', 8: '♦'}
             for row in world:
                 print(jc.join([s[t] for t in row]))
+                
+            print(self.env._gen_mission())
 
         if self.obs['image'][self.my_coord[0], -2, 0] == 7:
             return 1  # there is a fly directly in front
