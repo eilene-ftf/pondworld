@@ -69,9 +69,7 @@ class Pond(MiniGridEnv):
             **kwargs,
         )
               
-    def render(self):
-        print(self.render_mode)
-        
+    def render(self):        
         super().render()
     
     @staticmethod
