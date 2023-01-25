@@ -68,7 +68,12 @@ class Pond(MiniGridEnv):
             max_steps=max_steps,
             **kwargs,
         )
-                
+              
+    def render(self):
+        print(self.render_mode)
+        
+        super().render()
+    
     @staticmethod
     def _gen_mission():
         return "eat all the flies"
@@ -103,6 +108,8 @@ class Pond(MiniGridEnv):
         
     def step(self, action):
         obs, reward, terminated, truncated, info = super().step(action)
+        
+        print(self.render_mode)
         
         if action == Actions.toggle and self.saw_fly:
             reward = self._reward()

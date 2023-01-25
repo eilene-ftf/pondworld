@@ -29,7 +29,12 @@ class FrogControl(ManualControl):
         textmode: bool = False,
         emojis: bool = False
     ) -> None:
-        super().__init__(env, agent_view, window, seed)
+        if not textmode:
+            super().__init__(env, agent_view, window, seed)
+        else:
+            self.env = env
+            self.agent_view = agent_view
+            self.seed = seed
         
         self.actions = {
             'forward': MiniGridEnv.Actions.forward,
@@ -43,19 +48,22 @@ class FrogControl(ManualControl):
         
     def start(self):
         self.reset(self.seed)
-        self.window.show(block=False)
+        if not self.textmode:
+            self.window.show(block=False)
     
     def reset(self, seed=None):
         self.env.reset(seed=seed)
         self.obs = self.env.gen_obs()
         
         self.my_coord = (self.obs['image'].shape[0]//2, self.obs['image'].shape[1] - 1)
-
+        
         if hasattr(self.env, "mission"):
             self.mission = self.env.mission
-            self.window.set_caption(self.env.mission)
+            if not self.textmode:
+                self.window.set_caption(self.env.mission)
 
-        self.redraw()    
+        if not self.textmode:
+            self.redraw()
         
     def key_handler(self, _):
         pass
@@ -67,7 +75,8 @@ class FrogControl(ManualControl):
         return self.step(self.actions[action])
         
     def end(self):
-        self.window.close()
+        if not self.textmode:
+            self.window.close()
         
     def step(self, action: MiniGridEnv.Actions) -> EnvState:
         obs, reward, terminated, truncated, _ = self.env.step(action)
@@ -77,7 +86,7 @@ class FrogControl(ManualControl):
             self.reset(self.seed)
         elif truncated:
             self.reset(self.seed)
-        else:
+        elif not self.textmode:
             self.redraw()
             
         return EnvState(reward, terminated, truncated)
