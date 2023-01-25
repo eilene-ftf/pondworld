@@ -91,14 +91,13 @@ class FrogControl(ManualControl):
         if self.textmode:
             #print("\033c", end='')
             world = self.env.grid.encode()[:, :, 0]
-            print(self.env.agent_pos)
-            world[self.env.agent_pos] = 8
+            world[tuple(self.env.agent_pos)] = 8
             jc = '' if self.emojis else ' '
             s = {7: '🪰', 1: '⬛', 2: '🧱', 8: '🐸'} if self.emojis else {7: '°', 1: ' ', 2: '#', 8: '♦'}
             for row in world:
                 print(jc.join([s[t] for t in row]))
                 
-            print(self.env._gen_mission())
+            print(self.env.mission)
 
         if self.obs['image'][self.my_coord[0], -2, 0] == 7:
             return 1  # there is a fly directly in front
