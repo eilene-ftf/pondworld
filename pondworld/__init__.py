@@ -1,4 +1,4 @@
-from frog_control import FrocControl, EnvState
+from pondworld.frog_control import FrogControl, EnvState
 from gymnasium.envs.registration import register
 
 register(

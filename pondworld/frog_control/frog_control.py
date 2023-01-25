@@ -11,8 +11,6 @@ from minigrid.manual_control import ManualControl
 from enum import Enum
 from dataclasses import dataclass
 
-import pond_grid
-
 import numpy as np
 
 @dataclass
