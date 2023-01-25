@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
         name='pondworld',
-        version='0.0.12',
+        version='0.0.13',
         description='A little minigrid world featuring a frog that eats flies',
         author='Eilene Tomkins-Flanagan',
         author_email='eilenetomkinsflanaga@cmail.carleton.ca',
