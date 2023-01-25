@@ -25,10 +25,12 @@ from minigrid.utils.rendering import (
 
 from typing import Any, Callable
 
+import importlib.resources
 
 def render_svg(img, fname, rot=0):
-    with open(fname, 'r') as f:
-        b = f.read()
+    with importlib.resources.path('pondworld.assets', fname) as rsc:
+        with open(rsc, 'r') as f:
+            b = f.read()
     im = cairosvg.svg2png(b, output_width=img.shape[0], output_height=img.shape[1])
     decoded = cv2.imdecode(np.frombuffer(im, np.uint8), -1)
     
@@ -43,7 +45,7 @@ def render_svg(img, fname, rot=0):
     
 class Fly(Box):
     def render(self, img):
-        render_svg(img, f'/home/renee/Documents/TA-grad_stuff/cgsc_3601/pondworld/assets/fly-{self.color}.svg')
+        render_svg(img, f'fly-{self.color}.svg')
 
     
 class Pond(MiniGridEnv):
@@ -191,7 +193,7 @@ class FroggyGrid(Grid):
 
         # Overlay the agent on top
         if agent_dir is not None:
-            render_svg(img, f'/home/renee/Documents/TA-grad_stuff/cgsc_3601/pondworld/assets/frog.svg', rot=(-agent_dir + 1) % 4)
+            render_svg(img, f'frog.svg', rot=(-agent_dir + 1) % 4)
 
         # Highlight the cell if needed
         if highlight:
