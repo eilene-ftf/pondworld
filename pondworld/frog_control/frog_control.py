@@ -25,7 +25,8 @@ class FrogControl(ManualControl):
         env: MiniGridEnv,
         agent_view: bool = False,
         window: Window = None,
-        seed = None
+        seed = None,
+        textmode: bool = False
     ) -> None:
         super().__init__(env, agent_view, window, seed)
         
@@ -35,6 +36,8 @@ class FrogControl(ManualControl):
             'right': MiniGridEnv.Actions.right,
             'interact': MiniGridEnv.Actions.toggle
         }
+
+        self.textmode = textmode
         
     def start(self):
         self.reset(self.seed)
@@ -83,6 +86,14 @@ class FrogControl(ManualControl):
         return (np.array(self.my_coord) - np.array(trg_coord)).sum() 
     
     def look(self):
+        if self.textmode:
+            #print("\033c", end='')
+            world = self.env.grid.encode()[:, :, 0]
+            world[self.env.agent_pos] = 8
+            s = {7: '°', 1: ' ', 2: '#', 8: 'F'}
+            for row in world:
+                print(' '.join([s[t] for t in row]))
+
         if self.obs['image'][self.my_coord[0], -2, 0] == 7:
             return 1  # there is a fly directly in front
         
