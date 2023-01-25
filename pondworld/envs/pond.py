@@ -107,8 +107,6 @@ class Pond(MiniGridEnv):
     def step(self, action):
         obs, reward, terminated, truncated, info = super().step(action)
         
-        print(self.render_mode)
-        
         if action == Actions.toggle and self.saw_fly:
             reward = self._reward()
         
