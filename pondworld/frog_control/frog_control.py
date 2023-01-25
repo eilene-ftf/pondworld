@@ -107,6 +107,10 @@ class FrogControl(ManualControl):
                 print(jc.join([s[t] for t in row]))
                 
             print(self.env.mission)
+            
+            dirs = ['⬇️', '➡️', '⬆️', '⬅️',] if self.emojis else ['🖣', '☛', '🖢', '☚']
+            
+            print(f'frog compass: {dirs[self.env.agent_dir]}')
 
         if self.obs['image'][self.my_coord[0], -2, 0] == 7:
             return 1  # there is a fly directly in front
