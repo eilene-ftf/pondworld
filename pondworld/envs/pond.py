@@ -28,7 +28,7 @@ from typing import Any, Callable
 import importlib.resources
 
 def render_svg(img, fname, rot=0):
-    with importlib.resources.path('pondworld.assets', fname) as rsc:
+    with importlib.resources.path('assets', fname) as rsc:
         with open(rsc, 'r') as f:
             b = f.read()
     im = cairosvg.svg2png(b, output_width=img.shape[0], output_height=img.shape[1])
