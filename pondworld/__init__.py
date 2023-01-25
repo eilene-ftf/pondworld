@@ -1,3 +1,4 @@
+from frog_control import FrocControl, EnvState
 from gymnasium.envs.registration import register
 
 register(
