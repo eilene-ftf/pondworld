@@ -91,6 +91,7 @@ class FrogControl(ManualControl):
         if self.textmode:
             #print("\033c", end='')
             world = self.env.grid.encode()[:, :, 0]
+            print(self.env.agent_pos)
             world[self.env.agent_pos] = 8
             jc = '' if self.emojis else ' '
             s = {7: '🪰', 1: '⬛', 2: '🧱', 8: '🐸'} if self.emojis else {7: '°', 1: ' ', 2: '#', 8: '♦'}
