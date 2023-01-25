@@ -26,7 +26,8 @@ class FrogControl(ManualControl):
         agent_view: bool = False,
         window: Window = None,
         seed = None,
-        textmode: bool = False
+        textmode: bool = False,
+        emojis: bool = False
     ) -> None:
         super().__init__(env, agent_view, window, seed)
         
@@ -38,6 +39,7 @@ class FrogControl(ManualControl):
         }
 
         self.textmode = textmode
+        self.emojis = emojis
         
     def start(self):
         self.reset(self.seed)
@@ -90,7 +92,7 @@ class FrogControl(ManualControl):
             #print("\033c", end='')
             world = self.env.grid.encode()[:, :, 0]
             world[self.env.agent_pos] = 8
-            s = {7: '°', 1: ' ', 2: '#', 8: 'F'}
+            s = {7: '🪰', 1: ' ', 2: '🧱', 8: '🐸'} if self.emojis {7: '°', 1: ' ', 2: '#', 8: '♦'}
             for row in world:
                 print(' '.join([s[t] for t in row]))
 
