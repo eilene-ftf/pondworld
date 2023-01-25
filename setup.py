@@ -16,7 +16,6 @@ setup(
         install_requires=[
                           'gymnasium', 
                           'numpy',
-                          'cairo',
                           'cairosvg', 
                           'opencv-python', 
                           'minigrid', 
