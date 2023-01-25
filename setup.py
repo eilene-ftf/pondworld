@@ -2,20 +2,27 @@ from setuptools import setup
 
 setup(
         name='pondworld',
-        version='0.0.14',
+        version='0.0.15',
         description='A little minigrid world featuring a frog that eats flies',
         author='Eilene Tomkins-Flanagan',
         author_email='eilenetomkinsflanaga@cmail.carleton.ca',
         include_package_data=True,
-        packages=['pondworld', 'pondworld.envs', 'pondworld.frog_control', 'pond_assets'],
-        install_requires=['gymnasium', 
-                          'numpy', 
+        packages=[
+            'pondworld', 
+            'pondworld.envs', 
+            'pondworld.frog_control', 
+            'pond_assets'
+            ],
+        install_requires=[
+                          'gymnasium', 
+                          'numpy',
+                          'cairo',
                           'cairosvg', 
                           'opencv-python', 
                           'minigrid', 
                           'tk',
-                          'ipympl'],
-
+                          'ipympl'
+                          ],
         classifiers=[
             'Programming Language :: Python :: 3'
             ]
