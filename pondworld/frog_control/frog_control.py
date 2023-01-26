@@ -99,10 +99,60 @@ class FrogControl(ManualControl):
     def look(self):
         if self.textmode:
             #print("\033c", end='')
+            
+            # This needs to be used to process occlusion eventually
+            #view = self.env.gen_obs_grid()
+            
             world = self.env.grid.encode()[:, :, 0]
-            world[tuple(self.env.agent_pos)] = 8
+            world[tuple(self.env.agent_pos)] = 10
+            
+            vision_pos = (self.env.agent_view_size//2, self.env.agent_view_size-1)
+            
+            exts = [
+                ( # down
+                    self.env.agent_pos[0],
+                    self.env.agent_pos[0] + self.env.agent_view_size - 1,
+                    self.env.agent_pos[1] - self.env.agent_view_size//2,
+                    self.env.agent_pos[1] + self.env.agent_view_size//2
+                ),
+                ( # right
+                    self.env.agent_pos[0] - self.env.agent_view_size//2,
+                    self.env.agent_pos[0] + self.env.agent_view_size//2,
+                    self.env.agent_pos[1],
+                    self.env.agent_pos[1] + self.env.agent_view_size - 1
+                ),
+                ( # up
+                    self.env.agent_pos[0] - self.env.agent_view_size + 1,
+                    self.env.agent_pos[0],
+                    self.env.agent_pos[1] - self.env.agent_view_size//2,
+                    self.env.agent_pos[1] + self.env.agent_view_size//2
+                ),
+                ( # left
+                    self.env.agent_pos[0] - self.env.agent_view_size//2,
+                    self.env.agent_pos[0] + self.env.agent_view_size//2,
+                    self.env.agent_pos[1] - self.env.agent_view_size + 1,
+                    self.env.agent_pos[1]
+                )                    
+            ]
+            
+            viewY = (
+                max(0, exts[self.env.agent_dir][0]),
+                min(world.shape[0], exts[self.env.agent_dir][1] + 1)
+            )
+            
+            viewX = (
+                max(0, exts[self.env.agent_dir][2]),
+                min(world.shape[1], exts[self.env.agent_dir][3] + 1)
+            )
+            
+            for i in range(*viewY):
+                for j in range(*viewX):
+                
+                    if world[i, j] == 1:
+                        world[i, j] = 11
+            
             jc = '' if self.emojis else ' '
-            s = {7: '🪰', 1: '⬛', 2: '🧱', 8: '🐸'} if self.emojis else {7: '°', 1: ' ', 2: '#', 8: '♦'}
+            s = {7: '🪰', 1: '⬛', 2: '🧱', 10: '🐸', 11: '🟨'} if self.emojis else {7: '°', 1: ' ', 2: '#', 10: '♦', 11: '_'}
             for row in world:
                 print(jc.join([s[t] for t in row]))
                 
