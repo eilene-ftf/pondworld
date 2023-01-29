@@ -1,0 +1,10 @@
+build
+build/*
+build/*/*
+lab1_libs.egg-info
+lab1_libs.egg-info/*
+__pycache__
+__pycache__/*
+.DS_Store
+run.py
+refresh.sh
