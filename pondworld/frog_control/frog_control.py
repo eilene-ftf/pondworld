@@ -5,6 +5,7 @@ import gymnasium as gym
 from minigrid.minigrid_env import MiniGridEnv
 from minigrid.utils.window import Window
 from minigrid.wrappers import ImgObsWrapper, RGBImgPartialObsWrapper
+from minigrid.core.constants import OBJECT_TO_IDX
 
 from minigrid.manual_control import ManualControl
 
@@ -12,6 +13,20 @@ from enum import Enum
 from dataclasses import dataclass
 
 import numpy as np
+
+from minigrid.core.world_object import Key, Door
+from minigrid.core.world_object import Box as Fly
+
+OBJECT_TO_IDX = OBJECT_TO_IDX.copy()
+OBJECT_TO_IDX["fly"] = 7
+OBJECT_TO_IDX["lit"] = 11
+del OBJECT_TO_IDX["box"]
+IDX_TO_OBJECT = {v: k for k, v in OBJECT_TO_IDX.items()}
+
+WORLD_OBJECTS = {'key':  Key, 
+                 'door': Door, 
+                 'fly':  Fly
+                }
 
 @dataclass
 class EnvState:
@@ -27,20 +42,23 @@ class FrogControl(ManualControl):
         window: Window = None,
         seed = None,
         textmode: bool = False,
-        emojis: bool = False
+        emojis: bool = False,
+        see_through_walls: bool = False
     ) -> None:
         if not textmode:
-            super().__init__(env, agent_view, window, seed)
+            super().__init__(env, agent_view, window, seed, see_through_walls)
         else:
             self.env = env
             self.agent_view = agent_view
             self.seed = seed
+            self.env.see_through_walls = see_through_walls
         
         self.actions = {
             'forward': MiniGridEnv.Actions.forward,
             'left': MiniGridEnv.Actions.left,
             'right': MiniGridEnv.Actions.right,
-            'interact': MiniGridEnv.Actions.toggle
+            'interact': MiniGridEnv.Actions.toggle,
+            'pickup': MiniGridEnv.Actions.pickup
         }
 
         self.textmode = textmode
@@ -71,7 +89,6 @@ class FrogControl(ManualControl):
     def move(self, action) -> EnvState:
         #if not isinstance(action, Action):
         #    raise TypeError("Action must be one of Action.forward, Action.left, Action.right, or Action.interact, defined in this module")
-        
         return self.step(self.actions[action])
         
     def end(self):
@@ -101,7 +118,9 @@ class FrogControl(ManualControl):
             #print("\033c", end='')
             
             # This needs to be used to process occlusion eventually
-            #view = self.env.gen_obs_grid()
+            _, view = self.env.gen_obs_grid()
+            
+            viewrot = np.rot90(view, k=self.env.agent_dir+1)
             
             world = self.env.grid.encode()[:, :, 0]
             world[tuple(self.env.agent_pos)] = 10
@@ -145,14 +164,21 @@ class FrogControl(ManualControl):
                 min(world.shape[1], exts[self.env.agent_dir][3] + 1)
             )
             
-            for i in range(*viewY):
-                for j in range(*viewX):
+            for y, i in enumerate(range(*viewY)):
+                for x, j in enumerate(range(*viewX)):
+                    
+                    ylit = y - min(0, exts[self.env.agent_dir][0])
+                    xlit = x - min(0, exts[self.env.agent_dir][2])
+                    
+                    #print(f'[{ylit} {xlit}]')
                 
-                    if world[i, j] == 1:
+                    if world[i, j] == 1 and viewrot[ylit, xlit]:
                         world[i, j] = 11
             
             jc = '' if self.emojis else ' '
-            s = {7: '🪰', 1: '⬛', 2: '🧱', 10: '🐸', 11: '🟨'} if self.emojis else {7: '°', 1: ' ', 2: '#', 10: '♦', 11: '_'}
+            idxs = [OBJECT_TO_IDX[k] for k in ('fly', 'empty', 'wall', 'agent', 'lit', 'door', 'key')]
+            objects = ('🪰', '⬛', '🧱', '🐸', '🟨', '🚪', '🗝️') if self.emojis else ('°',' ','#','♦', '_', '▥', '%')
+            s = {k: v for k, v in zip(idxs, objects)}
             for row in world:
                 print(jc.join([s[t] for t in row]))
                 
@@ -162,21 +188,33 @@ class FrogControl(ManualControl):
             
             print(f'frog compass: {dirs[self.env.agent_dir]}')
 
-        if self.obs['image'][self.my_coord[0], -2, 0] == 7:
-            return 1  # there is a fly directly in front
-        
-        flies = np.argwhere(self.obs['image'][:, :, 0] == 7)
-        closest = np.argmin(map(self._taxicab, flies)) if flies.any() else None
-        
-        if closest is None: 
-            return 0 # there are no flies
-        
-        dist_x, dist_y = [self._taxicab(flies[closest], axis=i) for i in range(2)]
-        
-        if dist_y >= np.abs(dist_x):
-            return 2 # fly is farther ahead
-        elif dist_x > 0:
-            return 3 # fly is farther to the left
-        else: # dist_x < 0
-            return 4 # fly is farther to the right
-        
+            
+        state = {}
+        for obj in ['key', 'door', 'fly']:
+            if isinstance(self.env.carrying, WORLD_OBJECTS[obj]):
+                state[obj] = 5 # the object is held
+                continue
+                
+            if self.obs['image'][self.my_coord[0], -2, 0] == OBJECT_TO_IDX[obj]:
+                state[obj] = 1  # the object is directly in front
+                continue
+
+            objs = np.argwhere(view*self.obs['image'][:, :, 0] == OBJECT_TO_IDX[obj])
+            closest = np.argmin(map(self._taxicab, objs)) if objs.any() else None
+
+            if closest is None: 
+                state[obj] = 0 # there are no objects
+                continue
+
+            dist_x, dist_y = [self._taxicab(objs[closest], axis=i) for i in range(2)]
+
+            if dist_y >= np.abs(dist_x) and self.obs['image'][self.my_coord[0], -2, 0] != OBJECT_TO_IDX['wall']:
+                state[obj] = 2 # object is farther ahead
+            elif dist_x > 0:
+                state[obj] = 3 # fly is farther to the left
+            else: # dist_x < 0
+                state[obj] = 4 # fly is farther to the right
+                
+           
+        #print(state)
+        return state

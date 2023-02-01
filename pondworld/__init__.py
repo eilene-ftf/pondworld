@@ -5,3 +5,8 @@ register(
     id='pond-v0',
     entry_point='pondworld.envs:Pond',
 )
+
+register(
+    id='house-v0',
+    entry_point='pondworld.envs:House',
+)
