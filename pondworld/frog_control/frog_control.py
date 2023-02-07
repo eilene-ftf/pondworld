@@ -249,6 +249,10 @@ class FrogControl(ManualControl):
 
             
         state = {}
+        state['wall'] = False
+        if self.obs['image'][self.my_coord[0], -2, 0] == OBJECT_TO_IDX['wall']:
+            state['wall'] = True
+            
         for obj in ['key', 'door', 'fly']:
             if isinstance(self.env.carrying, WORLD_OBJECTS[obj]):
                 state[obj] = 5 # the object is held
