@@ -246,12 +246,17 @@ class FrogControl(ManualControl):
             
             
             print(f'frog compass: {self.dirs[self.env.agent_dir]}')
-
-            
+    
+        ca, cl, cr = (self.obs['image'][self.my_coord[0], -2, 0] == OBJECT_TO_IDX['wall'], 
+                      self.obs['image'][self.my_coord[0]+1, -1, 0] == OBJECT_TO_IDX['wall'],
+                      self.obs['image'][self.my_coord[0]-1, -1, 0] == OBJECT_TO_IDX['wall']
+                     )
+    
         state = {}
-        state['wall'] = False
-        if self.obs['image'][self.my_coord[0], -2, 0] == OBJECT_TO_IDX['wall']:
-            state['wall'] = True
+        state['wall'] = ca * 1 + cl * 2 + cr * 3
+            
+        state['wall'] += 1 * (state['wall'] > 1) + 2 * (state['wall'] > 3 or (state['wall'] == 3 and ca)) 
+        
             
         for obj in ['key', 'door', 'fly']:
             if isinstance(self.env.carrying, WORLD_OBJECTS[obj]):

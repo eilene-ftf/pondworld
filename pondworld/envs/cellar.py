@@ -163,7 +163,7 @@ class Cellar(MiniGridEnv):
         )]
 
         self.agent_pos = (middle, width-3)
-        self.agent_dir = np.random.randint(4)
+        self.agent_dir = 0
         
         
         for place in cellar_places:
