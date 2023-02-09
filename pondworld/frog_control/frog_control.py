@@ -71,7 +71,7 @@ class FrogControl(ManualControl):
         
         self.actions = {
             'forward': MiniGridEnv.Actions.forward,
-            'left': MiniGridEnv.Actions.left,
+            'left': MiniGridEnv.Actions.left, 
             'right': MiniGridEnv.Actions.right,
             'interact': MiniGridEnv.Actions.toggle,
             'pickup': MiniGridEnv.Actions.pickup
@@ -228,8 +228,9 @@ class FrogControl(ManualControl):
             frog_cam[:cam_break-1, :] = viewfinder
             
             frog_cam[cam_break-1, :] = code_sep
-            
-            for i, (world_row, cam_row) in enumerate(zip(world, frog_cam)):
+           
+            # Take the transpose of the world so it lines up with our moves
+            for i, (world_row, cam_row) in enumerate(zip(world.T, frog_cam)):
                 cam_str = self.jc.join(self.obj_str[t] for t in cam_row)
                 
                 if i < cam_break - 1:
