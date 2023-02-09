@@ -90,6 +90,7 @@ class FrogControl(ManualControl):
         self.obj_str = {k: v for k, v in zip(self.obj_idxs, self.all_strs)}
         self.dirs = ['⬇️', '➡️', '⬆️', '⬅️',] if self.emojis else ['🖣', '☛', '🖢', '☚']
         
+        
     def start(self):
         self.reset(self.seed)
         if not self.textmode:
@@ -100,6 +101,8 @@ class FrogControl(ManualControl):
         self.obs = self.env.gen_obs()
         
         self.my_coord = (self.obs['image'].shape[0]//2, self.obs['image'].shape[1] - 1)
+        self.view_less_me = np.ones(shape=self.obs['image'].shape[:2], dtype=bool)
+        self.view_less_me[self.my_coord] = False
         
         if hasattr(self.env, "mission"):
             self.mission = self.env.mission
@@ -260,7 +263,8 @@ class FrogControl(ManualControl):
         
             
         for obj in ['key', 'door', 'fly']:
-            if isinstance(self.env.carrying, WORLD_OBJECTS[obj]):
+            if (isinstance(self.env.carrying, WORLD_OBJECTS[obj]) and not 
+                OBJECT_TO_IDX[obj] in (self.obs['image'][:, :, 0] * self.view_less_me)):
                 state[obj] = 5 # the object is held
                 continue
                 
