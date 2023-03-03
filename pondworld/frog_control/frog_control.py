@@ -88,7 +88,7 @@ class FrogControl(ManualControl):
         self.objects = ('🪰', '⬛', '🧱', '🐸', '🟨', '🚪', '🗝️', '⬛') if self.emojis else ('°',' ','#','♦', '_', '▥', '🗝', ' ')
         self.all_strs = self.objects + self.cols + self.states + ('💠',) if self.emojis else ('=',) 
         self.obj_str = {k: v for k, v in zip(self.obj_idxs, self.all_strs)}
-        self.dirs = ['⬇️', '➡️', '⬆️', '⬅️',] if self.emojis else ['🖣', '☛', '🖢', '☚']
+        self.dirs = ['➡️', '⬇️', '⬅️', '⬆️'] if self.emojis else ['☛', '🖣',  '☚', '🖢']
         
         
     def start(self):
