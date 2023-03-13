@@ -74,7 +74,8 @@ class FrogControl(ManualControl):
             'left': MiniGridEnv.Actions.left, 
             'right': MiniGridEnv.Actions.right,
             'interact': MiniGridEnv.Actions.toggle,
-            'pickup': MiniGridEnv.Actions.pickup
+            'pickup': MiniGridEnv.Actions.pickup,
+            'drop': MiniGridEnv.Actions.drop
         }
 
         self.textmode = textmode
