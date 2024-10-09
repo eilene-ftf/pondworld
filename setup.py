@@ -14,7 +14,7 @@ setup(
             'pond_assets'
             ],
         install_requires=[
-                          'gymnasium', 
+                          'gymnasium == 0.29.0', 
                           'numpy',
                           'cairosvg', 
                           'opencv-python', 
