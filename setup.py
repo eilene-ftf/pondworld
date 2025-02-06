@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
         name='pondworld',
-        version='0.0.38',
+        version='0.0.39',
         description='A little minigrid world featuring a frog that eats flies',
         author='Eilene Tomkins-Flanagan',
         author_email='eilenetomkinsflanaga@cmail.carleton.ca',
@@ -18,7 +18,7 @@ setup(
                           'numpy',
                           'cairosvg', 
                           'opencv-python', 
-                          'minigrid == 2.1.1', 
+                          'minigrid == 2.3.0', 
                           'tk',
                           'ipympl'
                           ],

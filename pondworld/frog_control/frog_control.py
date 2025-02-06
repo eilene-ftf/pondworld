@@ -3,7 +3,7 @@ from __future__ import annotations
 import gymnasium as gym
 
 from minigrid.minigrid_env import MiniGridEnv
-from minigrid.utils.window import Window
+#from minigrid.utils.window import Window
 from minigrid.wrappers import ImgObsWrapper, RGBImgPartialObsWrapper
 from minigrid.core.constants import OBJECT_TO_IDX, COLOR_TO_IDX, STATE_TO_IDX
 
@@ -55,7 +55,7 @@ class FrogControl(ManualControl):
         self,
         env: MiniGridEnv,
         agent_view: bool = False,
-        window: Window = None,
+        window = None, # absolutely under no circumstances use this
         seed = None,
         textmode: bool = False,
         emojis: bool = False,
@@ -70,12 +70,12 @@ class FrogControl(ManualControl):
             self.env.see_through_walls = see_through_walls
         
         self.actions = {
-            'forward': MiniGridEnv.Actions.forward,
-            'left': MiniGridEnv.Actions.left, 
-            'right': MiniGridEnv.Actions.right,
-            'interact': MiniGridEnv.Actions.toggle,
-            'pickup': MiniGridEnv.Actions.pickup,
-            'drop': MiniGridEnv.Actions.drop
+            'forward': env.unwrapped.actions.forward,
+            'left': env.unwrapped.actions.left, 
+            'right': env.unwrapped.actions.right,
+            'interact': env.unwrapped.actions.toggle,
+            'pickup': env.unwrapped.actions.pickup,
+            'drop': env.unwrapped.actions.drop
         }
 
         self.textmode = textmode
@@ -99,16 +99,16 @@ class FrogControl(ManualControl):
     
     def reset(self, seed=None):
         self.env.reset(seed=seed)
-        self.obs = self.env.gen_obs()
+        self.obs = self.env.unwrapped.gen_obs()
         
         self.my_coord = (self.obs['image'].shape[0]//2, self.obs['image'].shape[1] - 1)
         self.view_less_me = np.ones(shape=self.obs['image'].shape[:2], dtype=bool)
         self.view_less_me[self.my_coord] = False
         
         if hasattr(self.env, "mission"):
-            self.mission = self.env.mission
+            self.mission = self.env.unwrapped.mission
             if not self.textmode:
-                self.window.set_caption(self.env.mission)
+                self.window.set_caption(self.env.unwrapped.mission)
 
         if not self.textmode:
             self.redraw()
@@ -247,7 +247,7 @@ class FrogControl(ManualControl):
                     cam_str = 'live frog reaction:'
                 print(self.jc.join(self.obj_str[t] for t in world_row) + '    ' + cam_str)
                 
-            print(self.env.mission)
+            print(self.env.unwrapped.mission)
             
             
             print(f'frog compass: {self.dirs[self.env.agent_dir]}')

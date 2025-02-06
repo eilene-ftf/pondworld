@@ -7,7 +7,7 @@ from minigrid.core.mission import MissionSpace
 from minigrid.core.world_object import WorldObj, Box, Wall, Door, Key
 from minigrid.core.constants import COLOR_TO_IDX, DIR_TO_VEC, OBJECT_TO_IDX, TILE_PIXELS, STATE_TO_IDX
 from minigrid.core.actions import Actions
-from minigrid.utils.window import Window
+#from minigrid.utils.window import Window
 from minigrid.minigrid_env import MiniGridEnv
 
 from typing import Any, Callable
